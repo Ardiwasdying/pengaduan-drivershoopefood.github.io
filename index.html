@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pusat Pengaduan Mitra Driver ShopeeFood</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            shopee: {
+              DEFAULT: '#EE4D2D',
+              dark: '#D03B1E',
+              light: '#FFF5F2',
+              hover: '#E03D1D',
+              accent: '#FF7337',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 flex flex-col antialiased selection:bg-orange-100 selection:text-orange-900">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200/80 transition-all shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo & Portal Title -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-shopee flex items-center justify-center text-white shadow-md shadow-orange-500/20">
+          <i data-lucide="bike" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight text-slate-900">Shopee<span class="text-shopee">Food</span></span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-orange-100 text-shopee">Mitra Driver</span>
+          </div>
+          <p class="text-xs text-slate-500">Pusat Layanan Bantuan & Pengaduan</p>
+        </div>
+      </div>
+
+      <!-- Right Header Actions -->
+      <div class="flex items-center gap-3">
+        <!-- Endpoint Connection Status Badge -->
+        <div id="endpointStatusBadge"></div>
+
+        <!-- Tombol Pengaturan Sheet -->
+        <button onclick="openSettingsModal()" title="Pengaturan Integrasi Google Sheet" class="p-2 rounded-xl text-slate-600 hover:text-shopee hover:bg-orange-50 transition-colors border border-slate-200">
+          <i data-lucide="settings" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= HERO HEADER BANNER ================= -->
+  <section class="relative shopee-bg-gradient text-white overflow-hidden py-10 px-4 sm:px-6 lg:px-8">
+    <!-- Subtle Background Pattern -->
+    <div class="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+    
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-semibold mb-3 border border-white/20">
+        <i data-lucide="shield-check" class="w-4 h-4 text-orange-200"></i>
+        <span>Layanan Resmi Bantuan Mitra Pengemudi</span>
+      </div>
+      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-3">
+        Formulir Pengaduan Mitra Driver ShopeeFood
+      </h1>
+      <p class="text-orange-50 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+        Sampaikan kendala pesanan, aplikasi, insentif, dompet mitra, atau masalah di lapangan. Tim operasional siap menindaklanjuti keluhan Anda secepatnya.
+      </p>
+
+      <!-- Security Reminder Alert -->
+      <div class="mt-6 inline-flex items-center gap-2 text-xs bg-black/20 backdrop-blur border border-white/20 text-orange-100 px-4 py-2 rounded-xl text-left">
+        <i data-lucide="lock" class="w-4 h-4 flex-shrink-0 text-amber-300"></i>
+        <span><strong>Keamanan Akun:</strong> ShopeeFood tidak pernah meminta <strong>PIN, Kode OTP,</strong> atau kata sandi dompet Anda.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-4 relative z-20 flex-1">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- ================= FORM SECTION (KIRI - 7 Kolom) ================= -->
+      <div class="lg:col-span-7 space-y-6">
+        
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 sm:p-8 card-shadow">
+          
+          <!-- Header Form -->
+          <div class="flex items-center justify-between border-b border-slate-100 pb-5 mb-6">
+            <div>
+              <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                <i data-lucide="file-text" class="w-5 h-5 text-shopee"></i>
+                Isi Formulir Pengaduan
+              </h2>
+              <p class="text-xs text-slate-500 mt-0.5">Pastikan data yang dimasukkan sesuai dengan data akun Mitra Driver Anda.</p>
+            </div>
+            <div class="text-right">
+              <span class="text-[11px] font-semibold text-slate-400 block uppercase">No. Tiket</span>
+              <span id="ticketPreviewId" class="text-xs font-mono font-bold text-shopee bg-orange-50 px-2.5 py-1 rounded-md border border-orange-200">
+                SPF-Memuat...
+              </span>
+            </div>
+          </div>
+
+          <!-- Form Element -->
+          <form id="complaintForm" class="space-y-6" novalidate>
+            
+            <!-- SECTION 1: IDENTITAS MITRA -->
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-6 h-6 rounded-full bg-orange-100 text-shopee text-xs font-bold flex items-center justify-center">1</span>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700">Data Identitas Pengemudi</h3>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Nama Lengkap -->
+                <div class="sm:col-span-2">
+                  <label for="fullName" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    Nama Lengkap Mitra <span class="text-rose-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <i data-lucide="user" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                    <input 
+                      type="text" 
+                      id="fullName" 
+                      required 
+                      placeholder="Contoh: Budi Santoso"
+                      class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm form-input-custom text-slate-900 placeholder:text-slate-400"
+                    />
+                  </div>
+                </div>
+
+                <!-- ID Driver -->
+                <div>
+                  <label for="driverId" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    ID Driver / No. Mitra Shopee <span class="text-rose-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <i data-lucide="badge-check" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                    <input
+                      type="text"
+                      id="driverId"
+                      required
+                      placeholder="Contoh: SFD-829104"
+                      class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm form-input-custom text-slate-900 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1">Dapat dilihat pada menu Profil aplikasi driver.</p>
+                </div>
+
+                <!-- No WhatsApp -->
+                <div>
+                  <label for="phoneNumber" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    No. WhatsApp Aktif <span class="text-rose-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <i data-lucide="phone" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                    <input
+                      type="tel"
+                      id="phoneNumber"
+                      required
+                      placeholder="Contoh: 081234567890"
+                      class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm form-input-custom text-slate-900 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1">Untuk konfirmasi tindak lanjut laporan.</p>
+                </div>
+
+                <!-- Kota Operasional -->
+                <div class="sm:col-span-2">
+                  <label for="operationalCity" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    Kota / Wilayah Operasional <span class="text-rose-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <i data-lucide="map-pin" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                    <select 
+                      id="operationalCity" 
+                      required 
+                      class="w-full pl-10 pr-8 py-2.5 rounded-xl text-sm form-input-custom text-slate-900 bg-white"
+                    >
+                      <option value="" disabled selected>Pilih Wilayah Operasional</option>
+                      <option value="Jabodetabek">Jabodetabek (Jakarta, Bogor, Depok, Tangerang, Bekasi)</option>
+                      <option value="Bandung Raya">Bandung Raya</option>
+                      <option value="Surabaya & Sidoarjo">Surabaya & Sidoarjo</option>
+                      <option value="Semarang">Semarang</option>
+                      <option value="Yogyakarta & Solo">Yogyakarta & Solo</option>
+                      <option value="Medan">Medan</option>
+                      <option value="Palembang">Palembang</option>
+                      <option value="Makassar">Makassar</option>
+                      <option value="Denpasar / Bali">Denpasar / Bali</option>
+                      <option value="Malang">Malang</option>
+                      <option value="Lainnya">Wilayah / Kota Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SECTION 2: DETAIL PENGADUAN -->
+            <div class="pt-4 border-t border-slate-100">
+              <div class="flex items-center gap-2 mb-4">
+                <span class="w-6 h-6 rounded-full bg-orange-100 text-shopee text-xs font-bold flex items-center justify-center">2</span>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-700">Rincian Masalah / Kendala</h3>
+              </div>
+
+              <div class="space-y-4">
+                <!-- Kategori Kendala -->
+                <div>
+                  <label for="category" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    Kategori Pengaduan <span class="text-rose-500">*</span>
+                  </label>
+                  <div class="relative">
+                    <i data-lucide="alert-circle" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                    <select 
+                      id="category" 
+                      required 
+                      class="w-full pl-10 pr-8 py-2.5 rounded-xl text-sm form-input-custom text-slate-900 bg-white"
+                    >
+                      <option value="" disabled selected>Pilih Kategori Kendala</option>
+                      <option value="Kendala Aplikasi & Akun">Kendala Aplikasi, GPS Error, atau Status Akun</option>
+                      <option value="Pesanan Fiktif / Tidak Ada Pemesan">Pesanan Fiktif / Nomor Pelanggan Tidak Aktif</option>
+                      <option value="Resto Tutup / Alamat Resto Salah">Resto Tutup / Pindah / Tidak Sesuai Titik</option>
+                      <option value="Pembayaran, Dompet & Insentif">Dompet Mitra, Penarikan Dana (Withdrawal) & Insentif</option>
+                      <option value="Kendala Dengan Pelanggan">Kendala dengan Pelanggan (Perilaku / Pembatalan Sepihak)</option>
+                      <option value="Biaya Parkir & Ongkir Tambahan">Biaya Parkir Tidak Sesuai / Ongkir Kurang</option>
+                      <option value="Lain-Lain">Lain-Lain / Saran Peningkatan Layanan</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Nomor Pesanan (Order ID) -->
+                <div>
+                  <label for="orderId" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    Nomor Pesanan / Order ID <span class="text-slate-400 font-normal">(Opsional)</span>
+                  </label>
+                  <div class="relative">
+                    <i data-lucide="receipt" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                    <input 
+                      type="text" 
+                      id="orderId" 
+                      placeholder="Contoh: 109283749281 atau SPF-ORD-8812"
+                      class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm form-input-custom text-slate-900 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1">Kosongkan jika laporan tidak berkaitan dengan pesanan tertentu.</p>
+                </div>
+
+                <!-- Detail / Kronologi -->
+                <div>
+                  <label for="description" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    Kronologi & Detail Pengaduan <span class="text-rose-500">*</span>
+                  </label>
+                  <textarea 
+                    id="description" 
+                    rows="4" 
+                    required 
+                    placeholder="Jelaskan secara rinci kronologi kejadian: waktu kejadian, nama resto/pelanggan, kendala yang dialami, dan apa yang sudah dicoba..."
+                    class="w-full p-3.5 rounded-xl text-sm form-input-custom text-slate-900 placeholder:text-slate-400 resize-y"
+                  ></textarea>
+                  <p class="text-[11px] text-slate-400 mt-1">Tuliskan penjelasan minimal 15 karakter agar mudah diverifikasi tim support.</p>
+                </div>
+
+                <!-- Link Lampiran Bukti -->
+                <div>
+                  <label for="attachmentLink" class="block text-xs font-bold text-slate-700 mb-1.5">
+                    Link Bukti Foto / Screenshot <span class="text-slate-400 font-normal">(Opsional)</span>
+                  </label>
+                  <div class="relative">
+                    <i data-lucide="link" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                    <input 
+                      type="url" 
+                      id="attachmentLink" 
+                      placeholder="Link Google Drive, Imgur, atau Cloud (Pastikan akses diset Publik)"
+                      class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm form-input-custom text-slate-900 placeholder:text-slate-400"
+                    />
+                  </div>
+                  <p class="text-[11px] text-slate-400 mt-1">Contoh: Link foto chat dengan resto/pelanggan, struk pembayaran, atau tangkapan layar error.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pernyataan Kebenaran Data -->
+            <div class="pt-2">
+              <label class="flex items-start gap-3 cursor-pointer select-none">
+                <input type="checkbox" required class="w-4 h-4 mt-0.5 rounded border-slate-300 text-shopee focus:ring-shopee accent-orange-600" />
+                <span class="text-xs text-slate-600 leading-relaxed">
+                  Saya menyatakan bahwa informasi yang saya sampaikan adalah benar dan sesuai dengan kondisi yang terjadi di lapangan.
+                </span>
+              </label>
+            </div>
+
+            <!-- Tombol Submit -->
+            <div class="pt-2">
+              <button 
+                type="submit" 
+                id="btnSubmit" 
+                class="w-full py-3.5 px-6 rounded-xl bg-shopee hover:bg-shopee-dark text-white font-bold text-sm tracking-wide shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2 transition-all transform active:scale-[0.99]"
+              >
+                <div id="submitSpinner" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin-custom hidden"></div>
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span id="btnSubmitText">Kirim Pengaduan Sekarang</span>
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+      <!-- ================= SIDEBAR INFO & PANDUAN (KANAN - 5 Kolom) ================= -->
+      <div class="lg:col-span-5 space-y-6">
+        
+        <!-- Kartu Alur Penanganan -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 card-shadow">
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2 mb-4">
+            <i data-lucide="git-commit" class="w-4 h-4 text-shopee"></i>
+            Alur Penanganan Pengaduan
+          </h3>
+
+          <div class="relative pl-6 space-y-4 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-orange-100">
+            <!-- Step 1 -->
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-shopee text-white flex items-center justify-center text-[10px] font-bold">1</div>
+              <h4 class="text-xs font-bold text-slate-800">Tiket Diterbitkan Otomatis</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Sistem mencatat data dan menerbitkan ID Tiket pengaduan unik.</p>
+            </div>
+            <!-- Step 2 -->
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-shopee text-white flex items-center justify-center text-[10px] font-bold">2</div>
+              <h4 class="text-xs font-bold text-slate-800">Pencatatan ke Database Sheet</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Data terinput langsung ke Google Sheet pengawas operasional.</p>
+            </div>
+            <!-- Step 3 -->
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-shopee text-white flex items-center justify-center text-[10px] font-bold">3</div>
+              <h4 class="text-xs font-bold text-slate-800">Verifikasi & Investigasi Tim</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Admin meninjau bukti transaksi, resto, atau titik koordinat GPS.</p>
+            </div>
+            <!-- Step 4 -->
+            <div class="relative">
+              <div class="absolute -left-6 top-0.5 w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</div>
+              <h4 class="text-xs font-bold text-emerald-700">Penyelesaian Kendala</h4>
+              <p class="text-xs text-slate-500 mt-0.5">Driver dihubungi via WhatsApp / notifikasi aplikasi dalam 1x24 jam kerja.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kartu FAQ Cepat Mitra -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 p-6 card-shadow space-y-4">
+          <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+            <i data-lucide="help-circle" class="w-4 h-4 text-shopee"></i>
+            FAQ Kendala Lapangan
+          </h3>
+
+          <div class="space-y-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <p class="font-bold text-slate-800 mb-1">🍔 Bagaimana jika Resto Tutup / Tidak Ditemukan?</p>
+              <p class="text-slate-600 leading-relaxed">Ambil foto lokasi resto/spanduk tutup, lalu cantumkan link foto di kolom bukti lampiran form ini.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <p class="font-bold text-slate-800 mb-1">⛔ Mengalami Pesanan Fiktif / Pelanggan Hilang?</p>
+              <p class="text-slate-600 leading-relaxed">Jangan selesaikan pesanan mandiri. Masukkan No. Order ID pada form ini agar saldo tidak terpotong.</p>
+            </div>
+            <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <p class="font-bold text-slate-800 mb-1">💰 Insentif / Dompet Mitra Belum Masuk?</p>
+              <p class="text-slate-600 leading-relaxed">Pilih kategori "Pembayaran, Dompet & Insentif", sertakan tanggal hari kerja dan rincian nominal yang belum sesuai.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kartu Kontak CS Darurat -->
+        <div class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl border border-orange-200/80 p-6 card-shadow text-center">
+          <div class="w-12 h-12 rounded-2xl bg-orange-100 text-shopee flex items-center justify-center mx-auto mb-3 shadow-inner">
+            <i data-lucide="headphones" class="w-6 h-6"></i>
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm mb-1">Butuh Bantuan Mendesak?</h3>
+          <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+            Jika mengalami kecelakaan lalu lintas atau ancaman bahaya darurat saat mengantar pesanan:
+          </p>
+          <div class="inline-flex items-center gap-2 px-4 py-2 bg-shopee text-white rounded-xl text-xs font-bold shadow-md shadow-orange-500/20">
+            <i data-lucide="phone-call" class="w-4 h-4"></i>
+            <span>Call Center 24 Jam: 021-39500300</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= MODAL SUKSES PENGADUAN ================= -->
+  <div id="successModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 modal-backdrop">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 card-shadow text-center transform transition-all">
+      
+      <!-- Icon Centang Hijau -->
+      <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-inner">
+        <i data-lucide="check" class="w-8 h-8 stroke-[2.5]"></i>
+      </div>
+
+      <h3 class="text-xl font-bold text-slate-900 mb-1">Pengaduan Berhasil Dikirim!</h3>
+      <p class="text-xs text-slate-500 mb-6">Data laporan Anda telah masuk ke sistem operasional Google Sheet kami.</p>
+
+      <!-- Banner Mode Demo jika belum connect URL -->
+      <div id="modalDemoBanner" class="hidden mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-left text-xs text-amber-800">
+        <div class="font-bold flex items-center gap-1.5 mb-0.5">
+          <i data-lucide="info" class="w-4 h-4 text-amber-600"></i>
+          Catatan Mode Simulasi:
+        </div>
+        <p class="text-[11px] text-amber-700">Formulir berjalan dalam mode preview. Hubungkan Google Apps Script Anda untuk menyimpan data sungguhan ke Google Sheet.</p>
+      </div>
+
+      <!-- Ticket Details Card -->
+      <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 text-left space-y-2.5 mb-6">
+        <div>
+          <span class="text-[11px] text-slate-400 font-semibold block uppercase">Nomor Tiket Anda</span>
+          <div class="flex items-center justify-between mt-0.5">
+            <span id="modalTicketId" class="font-mono font-bold text-base text-shopee">SPF-XXXXXXXX-XXXX</span>
+            <button onclick="copyTicketNumber()" title="Salin Tiket" class="p-1.5 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-shopee text-xs font-semibold flex items-center gap-1 transition-colors">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span>Salin</span>
+            </button>
+          </div>
+        </div>
+        <div class="pt-2 border-t border-slate-200 flex justify-between text-xs">
+          <span class="text-slate-500">Nama Pelapor:</span>
+          <span id="modalDriverName" class="font-semibold text-slate-800">-</span>
+        </div>
+        <div class="flex justify-between text-xs">
+          <span class="text-slate-500">Kategori:</span>
+          <span id="modalCategory" class="font-semibold text-slate-800 text-right max-w-[200px] truncate">-</span>
+        </div>
+        <div class="flex justify-between text-xs">
+          <span class="text-slate-500">Status Awal:</span>
+          <span class="px-2 py-0.5 bg-blue-100 text-blue-700 font-bold rounded-full text-[10px]">Baru Masuk</span>
+        </div>
+      </div>
+
+      <p class="text-xs text-slate-500 mb-6 leading-relaxed">
+        Simpan nomor tiket di atas. Tim Customer Care kami akan menghubungi nomor WhatsApp aktif Anda dalam kurun waktu <strong>1x24 jam</strong>.
+      </p>
+
+      <button 
+        onclick="closeSuccessModal()" 
+        class="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider transition-colors"
+      >
+        Tutup & Selesai
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL PENGATURAN GOOGLE SCRIPT URL ================= -->
+  <div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-900/60 modal-backdrop">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 card-shadow text-left transform transition-all">
+      
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+            <i data-lucide="sheet" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-900 text-base">Pengaturan Integrasi Google Sheet</h3>
+            <p class="text-xs text-slate-500">Hubungkan form langsung ke spreadsheet Anda</p>
+          </div>
+        </div>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label for="gasUrlInput" class="block text-xs font-bold text-slate-700 mb-1">
+            Web App URL (Google Apps Script)
+          </label>
+          <input 
+            type="url" 
+            id="gasUrlInput" 
+            placeholder="https://script.google.com/macros/s/.../exec"
+            class="w-full px-3.5 py-2.5 rounded-xl text-xs font-mono form-input-custom text-slate-900 placeholder:text-slate-400"
+          />
+          <p class="text-[11px] text-slate-400 mt-1.5">
+            Dapatkan URL ini setelah menerapkan <em>(Deploy > Web app)</em> skrip <code>Code.gs</code> di Google Sheet Anda.
+          </p>
+        </div>
+
+        <!-- Panduan Singkat -->
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 text-xs text-slate-600 space-y-1.5">
+          <p class="font-bold text-slate-800">Langkah Cepat (3 Menit):</p>
+          <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-600">
+            <li>Buka Google Sheet baru &rarr; menu <strong>Extensions &gt; Apps Script</strong>.</li>
+            <li>Salin isi file <code>google-apps-script/Code.gs</code> ke editor.</li>
+            <li>Klik <strong>Deploy &gt; New deployment &gt; Web app</strong>.</li>
+            <li>Pilih <strong>Who has access: Anyone</strong> &rarr; klik <strong>Deploy</strong>.</li>
+            <li>Salin URL-nya dan tempelkan di kotak atas ini!</li>
+          </ol>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button 
+            type="button" 
+            onclick="closeSettingsModal()" 
+            class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-semibold text-xs hover:bg-slate-50 transition-colors"
+          >
+            Batal
+          </button>
+          <button 
+            type="button" 
+            onclick="saveGasUrl()" 
+            class="px-5 py-2.5 rounded-xl bg-shopee hover:bg-shopee-dark text-white font-bold text-xs shadow-md shadow-orange-500/20 transition-all"
+          >
+            Simpan & Sambungkan
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= FLOATING TOAST NOTIFICATION CONTAINER ================= -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-white border-t border-slate-200/80 py-6 mt-12 text-center text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-800">ShopeeFood Driver Support</span>
+        <span>•</span>
+        <span>Komitmen Pelayanan Mitra Adil & Terpercaya</span>
+      </div>
+      <p>&copy; 2026 Shopee Indonesia. Hak Cipta Dilindungi.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
